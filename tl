@@ -1,6 +1,7 @@
 import requests
 import time
 import json
+from datetime import datetime
 
 # Discord Webhook URL
 webhook_url = "YOUR_DISCORD_WEBHOOK_URL"
@@ -14,15 +15,8 @@ previous_status = None
 def check_server_status():
     global previous_status
     try:
-        # Send a request to the server status page
-        response = requests.get(status_url)
-        response.raise_for_status()
-        
-        # Parse the HTML content (or JSON if it's available directly)
-        content = response.text
-        
-        # Look for the server status info, update this line based on actual HTML structure
-        server_status = "up" if "Amos server is up" in content else "down"
+        # Simulate alternating status for testing
+        server_status = "up" if previous_status == "down" else "down"
         
         # Check if there's a change in server status
         if server_status != previous_status:
@@ -49,7 +43,26 @@ def post_to_discord(status):
     else:
         print("Failed to send message.")
 
-# Run check periodically (every 5 minutes)
-while True:
-    check_server_status()
-    time.sleep(300)  # Wait 5 minutes before checking again
+def main():
+    while True:
+        now = datetime.now()
+        day_of_week = now.weekday()
+        hour = now.hour
+        minute = now.minute
+
+        # Check every 30 seconds for testing
+        check_server_status()
+        
+        # Test Wednesday check (adjust as needed for current time)
+        if day_of_week == datetime.now().weekday():  # Testing with current day
+            if hour == datetime.now().hour:  # Testing with current hour
+                if minute % 2 == 0:  # Testing every 2 minutes instead of 30 mins
+                    time.sleep(30)  # Testing interval, 30 seconds
+                    continue
+
+        # Default testing interval every 30 seconds
+        time.sleep(30)
+
+# Run the main loop
+main()
+
